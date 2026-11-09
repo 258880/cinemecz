@@ -1,0 +1,38 @@
+import java.util.ArrayList;
+
+public class calculations
+{
+    public static double withdraw(double balance, double amount)
+    {
+        return balance - amount;
+    }
+
+    public static double deposit(double balance, double amount)
+    {
+        return balance + amount;
+    }
+
+    public static boolean hasEnoughFunds(double balance, double amount)
+    {
+        if(amount <= balance)
+	    {
+		return false;
+	    }
+	else
+	    {
+		return true;
+	    }
+    }
+
+    public static ArrayList<funciones> getAccounts()
+    {
+        ArrayList<funciones> cuentas = new ArrayList<>();
+        cuentas.add(new funciones("2629757", "Jonathan", "Saban", "5559693684",
+                "jonintendo1983@gmail.com", "4455", 350.6769, true));
+        cuentas.add(new funciones("1234567890", "Emmanuel", "Lopez Guerrero", "5500112233",
+                "elopez@ibero.com", "1234", 30000.50, true));
+        cuentas.add(new funciones("887455", "Fernando Ignacio", "Gutierrez", "5544558877",
+                "fernando@ibero.com", "6769", 0.356, false));
+        return cuentas;
+    }
+}

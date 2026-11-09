@@ -1,0 +1,47 @@
+ionimport java.util.ArrayList;
+
+public class funciones
+{
+    private String _numCuenta, _nombre, _apellido, _numTel, _email, _pin;
+    private double _balance;
+    private boolean _activo;
+
+    public funciones(String numCuenta, String nombre, String apellido,
+                   String numTel, String email, String pin,
+                   double balance, boolean activo) {
+        this._numCuenta = numCuenta;
+        this._nombre = nombre;
+        this._apellido = apellido;
+        this._numTel = numTel;
+        this._email = email;
+        this._pin = pin;
+        this._balance = balance;
+        this._activo = activo;
+    }
+
+    public String rNumCuenta()
+    {
+	return _numCuenta;
+    }
+    public String rPin()
+    {
+	return _pin;
+    }
+    public String rNombre()
+    {
+	return _nombre;
+    }
+    public double rBalance()
+    {
+	return _balance;
+    }
+    public boolean rActivo()
+    {
+	return _activo;
+    }
+
+    public void setBalance(double balance)//esta va a ser usado para guardar el estado del balance acutaul
+    {
+	this._balance = balance;
+    }
+}
