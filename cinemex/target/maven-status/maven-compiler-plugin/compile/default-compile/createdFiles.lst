@@ -1,0 +1,8 @@
+com\ejemplo\tmdb\tmdb_status.class
+com\ejemplo\tmdb\conexion_tmdb.class
+com\ejemplo\tmdb\pelicula.class
+com\ejemplo\tmdb\pelicula_dto.class
+com\ejemplo\tmdb\pelicula$Genre.class
+com\ejemplo\tmdb\tmdb_page.class
+com\ejemplo\tmdb\elenco_dto.class
+com\ejemplo\tmdb\server_api.class
