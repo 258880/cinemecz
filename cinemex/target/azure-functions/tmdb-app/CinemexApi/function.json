@@ -1,0 +1,16 @@
+{
+  "scriptFile" : "../tmdb-app-1.0-SNAPSHOT.jar",
+  "entryPoint" : "com.ejemplo.tmdb.server_api.run",
+  "bindings" : [ {
+    "type" : "httpTrigger",
+    "direction" : "in",
+    "name" : "req",
+    "route" : "peliculas/{*route}",
+    "methods" : [ "GET" ],
+    "authLevel" : "ANONYMOUS"
+  }, {
+    "type" : "http",
+    "direction" : "out",
+    "name" : "$return"
+  } ]
+}

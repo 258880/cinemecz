@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: Cinemex API
+  version: 1.0.0
+  description: API de películas respaldada por TMDB
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /health:
+    get:
+      summary: Estado del servicio
+      responses:
+        "200":
+          description: Servicio disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  servicio:
+                    type: string
+                    example: Cinemex API
+                  status:
+                    type: string
+                    example: ok
+                  endpoints:
+                    type: array
+                    items:
+                      type: string
+
+  /peliculas:
+    get:
+      summary: Listar películas populares
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Página de resultados; el valor predeterminado es 1.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        "200":
+          description: Página de películas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaPeliculas"
+        "500":
+          $ref: "#/components/responses/Error"
+
+  /peliculas/populares:
+    get:
+      summary: Listar películas populares
+      parameters:
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: Página de películas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaPeliculas"
+        "500":
+          $ref: "#/components/responses/Error"
+
+  /peliculas/cartelera:
+    get:
+      summary: Listar películas en cartelera
+      parameters:
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: Página de películas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaPeliculas"
+
+  /peliculas/proximos-estrenos:
+    get:
+      summary: Listar próximos estrenos
+      parameters:
+        - $ref: "#/components/parameters/Page"
+      responses:
+        "200":
+          description: Página de películas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginaPeliculas"
+
+  /peliculas/{id}:
+    get:
+      summary: Obtener detalles de una película
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        "200":
+          description: Detalles de la película
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pelicula"
+        "400":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+
+  /peliculas/{id}/reparto:
+    get:
+      summary: Obtener el reparto de una película
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reparto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IntegranteReparto"
+        "400":
+          $ref: "#/components/responses/Error"
+
+components:
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+  responses:
+    Error:
+      description: Error de la solicitud o del servicio
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    PaginaPeliculas:
+      type: object
+      properties:
+        pagina:
+          type: integer
+        totalPaginas:
+          type: integer
+        totalResultados:
+          type: integer
+        peliculas:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pelicula"
+
+    Pelicula:
+      type: object
+      properties:
+        id:
+          type: integer
+        titulo:
+          type: string
+        sinopsis:
+          type: string
+        fechaEstreno:
+          type: string
+          nullable: true
+        duracion:
+          type: integer
+        generos:
+          type: array
+          items:
+            type: string
+        clasificacion:
+          type: string
+        cartel:
+          type: string
+          nullable: true
+        calificacion:
+          type: number
+          format: double
+        estado:
+          type: string
+
+    IntegranteReparto:
+      type: object
+      properties:
+        id:
+          type: integer
+        nombre:
+          type: string
+        personaje:
+          type: string
+        foto:
+          type: string
+          nullable: true
+        orden:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        error:
+          type: string
