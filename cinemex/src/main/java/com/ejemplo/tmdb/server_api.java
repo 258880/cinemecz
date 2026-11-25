@@ -28,8 +28,6 @@ public class server_api {
             final ExecutionContext context) {
 
         try {
-            conexion_tmdb tmdb = new conexion_tmdb();
-            
             String path = request.getUri().getPath();
             String method = request.getHttpMethod().name();
 
@@ -48,7 +46,18 @@ public class server_api {
                     return sendSwaggerUI(request);
                 case "openapi.json":
                     return sendOpenApiSpec(request);
+                case "docs":
+                    return sendIndexHtml(request);
                 case "":
+                case "health":
+                    return sendHealth(request);
+                default:
+                    break;
+            }
+
+            conexion_tmdb tmdb = new conexion_tmdb();
+
+            switch (resto) {
                 case "populares":
                     return enviarLista(request, tmdb.populares(page));
                 case "cartelera":
@@ -85,12 +94,48 @@ public class server_api {
         }
     }
 
+    private HttpResponseMessage sendHealth(HttpRequestMessage<Optional<String>> request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("servicio", "Cinemex API");
+        body.put("status", "ok");
+        body.put("endpoints", List.of(
+                "/api/peliculas",
+                "/api/peliculas/health",
+                "/api/peliculas/populares",
+                "/api/peliculas/cartelera",
+                "/api/peliculas/proximos-estrenos",
+                "/api/peliculas/{id}",
+                "/api/peliculas/{id}/reparto",
+                "/api/peliculas/docs",
+                "/api/peliculas/openapi.json",
+                "/api/peliculas/swagger"
+        ));
+        return sendJson(request, HttpStatus.OK, body);
+    }
+
+    private HttpResponseMessage sendIndexHtml(HttpRequestMessage<Optional<String>> request) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("index.html")) {
+            if (is != null) {
+                String html = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                return request.createResponseBuilder(HttpStatus.OK)
+                        .header("Content-Type", "text/html; charset=utf-8")
+                        .header("Access-Control-Allow-Origin", "*")
+                        .body(html)
+                        .build();
+            } else {
+                return sendError(request, HttpStatus.NOT_FOUND, "Archivo index.html no encontrado en resources");
+            }
+        } catch (Exception e) {
+            return sendError(request, HttpStatus.INTERNAL_SERVER_ERROR, "Error leyendo index.html: " + e.getMessage());
+        }
+    }
+
     private HttpResponseMessage sendOpenApiSpec(HttpRequestMessage<Optional<String>> request) {
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("openapi.json")) {
             if (is != null) {
                 String spec = new String(is.readAllBytes(), StandardCharsets.UTF_8);
                 return request.createResponseBuilder(HttpStatus.OK)
-                        .header("Content-Type", "application/json")
+                        .header("Content-Type", "application/json; charset=utf-8")
                         .header("Access-Control-Allow-Origin", "*")
                         .body(spec)
                         .build();
@@ -117,7 +162,8 @@ public class server_api {
                 "    SwaggerUIBundle({\n" +
                 "      url: '/api/peliculas/openapi.json',\n" +
                 "      dom_id: '#swagger-ui',\n" +
-                "      deepLinking: true\n" +
+                "      deepLinking: true,\n" +
+                "      presets: [SwaggerUIBundle.presets.apis]\n" +
                 "    });\n" +
                 "  };\n" +
                 "</script>\n" +
@@ -125,6 +171,7 @@ public class server_api {
                 "</html>";
         return request.createResponseBuilder(HttpStatus.OK)
                 .header("Content-Type", "text/html; charset=utf-8")
+                .header("Access-Control-Allow-Origin", "*")
                 .body(html)
                 .build();
     }
